@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Dialect-Marked Response Audit: A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"
+abstract: >-
+  Safety evaluation for large language models typically scores a single answer,
+  whether it refuses a harmful request and whether it is correct, yet two users
+  who describe the same safety-critical situation in different language varieties
+  can receive unequally useful help. We introduce the Dialect-Marked Response
+  Audit (DMRA), a matched-pair protocol that makes safety-support equivalence a
+  measurable unit of analysis, and characterize where it breaks on Qwen3.5-35B-A3B
+  and a refusal-reduced fine-tune. Top-level safety often converges while support
+  quality, visible-trace cue use, and early routing diverge; a minimal-pair
+  ablation shows the high-risk signal is carried by syntax/register and
+  action/weapon lexis rather than the isolated in-group address term. The
+  single-run, single-rater results are descriptive and argue that safety
+  evaluation should test support equivalence across matched user surfaces, not
+  refusal alone.
+type: dataset
+authors:
+  - family-names: Shorthill
+    given-names: "Jeffrey W."
+    affiliation: "Independent researcher"
+    email: jws299792@icloud.com
+    orcid: "https://orcid.org/0009-0004-3954-2752"
+version: "1.0"
+date-released: "2026-06-21"
+license: CC-BY-4.0
+url: "https://github.com/jeffreywilliamportfolio/dmra-paper"
+repository-code: "https://github.com/jeffreywilliamportfolio/dmra-paper"
+keywords:
+  - dialect fairness
+  - AAVE
+  - large language models
+  - safety evaluation
+  - matched-pair audit
+  - visible reasoning traces
+preferred-citation:
+  type: article
+  title: "Dialect-Marked Response Audit: A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"
+  authors:
+    - family-names: Shorthill
+      given-names: "Jeffrey W."
+      affiliation: "Independent researcher"
+      orcid: "https://orcid.org/0009-0004-3954-2752"
+  year: 2026
+  month: 6
+  notes: "Preprint, version 1.0. Not peer reviewed."

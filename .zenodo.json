@@ -1,0 +1,26 @@
+{
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "title": "Dialect-Marked Response Audit: A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces",
+  "version": "1.0",
+  "language": "eng",
+  "license": "cc-by-4.0",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Shorthill, Jeffrey W.",
+      "affiliation": "Independent researcher",
+      "orcid": "0009-0004-3954-2752"
+    }
+  ],
+  "keywords": [
+    "dialect fairness",
+    "AAVE",
+    "large language models",
+    "safety evaluation",
+    "matched-pair audit",
+    "visible reasoning traces"
+  ],
+  "description": "<p><strong>Dialect-Marked Response Audit: A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces.</strong> Preprint, version 1.0 (June 2026). Not peer reviewed.</p><p>Safety evaluation for large language models typically scores a single answer, whether it refuses a harmful request and whether it is correct, yet two users who describe the same safety-critical situation in different language varieties can receive unequally useful help, a failure mode these metrics cannot see. We introduce the Dialect-Marked Response Audit (DMRA), a matched-pair protocol that makes safety-support equivalence a measurable unit of analysis, and characterize where it breaks on Qwen3.5-35B-A3B and a refusal-reduced HauhauCS fine-tune. DMRA pairs 66 deterministic African American Vernacular English (AAVE)-marked and comparison prompts with a 240-row minimal-pair ablation that isolates morphosyntax from lexical, action, and social-address cues, scored by a frame-aware rubric. Top-level safety often converges while support quality, visible-trace cue use, and early routing diverge; the base model's refusals compress these differences into uniformly safe answers, so a refusal-reduced fine-tune is used as a stress test, and the register-conditioned continuation it reveals tracks syntax/register and action/weapon lexis rather than the isolated in-group address term. These single-run, single-rater results are descriptive, and argue that safety evaluation should test support equivalence across matched user surfaces, not refusal alone, and that broad &ldquo;dialect marking makes models unsafe&rdquo; claims should give way to driver-specific, model-dependent ones.</p><p><strong>This deposit contains</strong> the paper (LaTeX source and built PDF) and a review change log. Sanitized data artifacts are released separately in the dmra-public-artifacts repository; raw safety-test generations are retained in a controlled archive for verification.</p>",
+  "notes": "Preprint, version 1.0; not peer reviewed. This is the revised ACL-style manuscript produced after a multi-agent review (see REVIEW_CHANGELOG.md). The study involves synthetic safety-test prompts; public materials redact operational detail and full slur-containing text, and raw generations are kept in a controlled archive. Written with the intentional, disclosed use of large language models for drafting, organization, and bibliography formatting; the human author verified every value and reference and takes full responsibility for the text."
+}
