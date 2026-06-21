@@ -22,9 +22,16 @@ authors:
     affiliation: "Independent researcher"
     email: jws299792@icloud.com
     orcid: "https://orcid.org/0009-0004-3954-2752"
-version: "1.0"
+version: "2.0"
 date-released: "2026-06-21"
 license: CC-BY-4.0
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.20449546"
+    description: "Concept DOI (all versions)"
+  - type: doi
+    value: "10.5281/zenodo.20785778"
+    description: "Version 2.0"
 url: "https://github.com/jeffreywilliamportfolio/dmra-paper"
 repository-code: "https://github.com/jeffreywilliamportfolio/dmra-paper"
 keywords:
@@ -44,4 +51,5 @@ preferred-citation:
       orcid: "https://orcid.org/0009-0004-3954-2752"
   year: 2026
   month: 6
-  notes: "Preprint, version 1.0. Not peer reviewed."
+  doi: "10.5281/zenodo.20785778"
+  notes: "Preprint, version 2.0. Not peer reviewed."

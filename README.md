@@ -2,8 +2,11 @@
 
 A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces — paper source and built PDF.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20449546.svg)](https://doi.org/10.5281/zenodo.20449546)
+
 **Author:** Jeffrey W. Shorthill (independent researcher) · `jws299792@icloud.com`
-**Version:** 1.0 (June 2026) · revised ACL-style manuscript · preprint, not peer reviewed
+**Version:** 2.0 (June 2026) · revised ACL-style manuscript (supersedes the single-column v1) · preprint, not peer reviewed
+**DOI:** [10.5281/zenodo.20449546](https://doi.org/10.5281/zenodo.20449546) (concept DOI — resolves to the latest version, currently v2.0)
 **License:** [CC BY 4.0](LICENSE)
 
 ## What this is
