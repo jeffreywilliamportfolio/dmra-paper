@@ -1,39 +1,42 @@
-# Dialect-Marked Response Audit (DMRA)
+# Bundled Dialect Contrasts Measure a Mixture: A Feature-Isolating Matched-Pair Audit of Safety-Critical Support in Language Models
 
-A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces — paper source and built PDF.
+The Dialect-Marked Response Audit (DMRA) protocol paper, version 4.1 (August 2026): paper source, built PDF, and change log. (Version 2.0, June 2026, was titled "Dialect-Marked Response Audit (DMRA): A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"; it is kept under `v2/`.)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20449546.svg)](https://doi.org/10.5281/zenodo.20449546)
 
 **Author:** Jeffrey W. Shorthill (independent researcher) · `jws299792@icloud.com`
-**Version:** 2.0 (June 2026) · revised ACL-style manuscript (supersedes the single-column v1) · preprint, not peer reviewed
-**DOI:** [10.5281/zenodo.20449546](https://doi.org/10.5281/zenodo.20449546) (concept DOI — resolves to the latest version, currently v2.0)
+**Version:** 4.1 (August 2026; v4.0 August 2026; v2.0 June 2026) · preprint, not peer reviewed
+**DOI:** [10.5281/zenodo.20449546](https://doi.org/10.5281/zenodo.20449546) (concept DOI — resolves to the latest version)
 **License:** [CC BY 4.0](LICENSE)
 
 ## What this is
 
-Safety evaluations usually score a single answer: did it refuse, was it correct.
-DMRA instead measures **safety-support equivalence** on matched prompt pairs — whether
-two users who describe the same safety-critical situation in different language
-varieties receive comparable urgency, specificity, and risk-reduction support.
-Studied on Qwen3.5-35B-A3B and a refusal-reduced fine-tune (as a stress test), with a
-minimal-pair ablation that isolates morphosyntax from lexical, action, and
-social-address cues. Top-level safety often converges while support quality, visible
-reasoning-trace cue use, and early routing diverge; the high-risk continuation signal
-is carried by syntax/register and action/weapon lexis, not the isolated in-group
-address term. Results are single-run, single-rater, and descriptive.
+Prior dialect audits compare a dialect-marked prompt with an unmarked one, and the two
+differ in many features at once, so they show that outputs differ without showing which
+feature the model responds to. DMRA is a six-stage matched-pair protocol, adapted from
+correspondence audits, whose central step builds prompt pairs that differ in exactly one
+feature; each stage is tied to a documented failure of the audit without it. On
+Qwen3.5-35B-A3B and a refusal-reduced stress variant, one-feature pairs change the
+attribution: varying dialect grammar alone reproduces the bundled contrast's unsafe
+answers (3 of 8 violence-domain pairs, stress model), varying the in-group racial address
+term alone produces none (0 of 8). Counts come from two pairs per arm, one domain, one
+greedy run per cell, a single rater, and are descriptive. Whole-dialect comparisons in
+the same corpus show real gaps that cannot be assigned to a feature, including a crisis
+hotline withheld from the marked user in answer-only mode.
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| `dmra_acl_style_rewrite.tex` | Paper source (LaTeX, ACL two-column; self-contained, figures are inline TikZ). |
-| `dmra_acl_style_rewrite.pdf` | Built PDF of the paper. |
-| `REVIEW_CHANGELOG.md` | Change log from the multi-agent review that produced this revision. |
+| `dmra_protocol.tex` | Paper source (LaTeX, two-column; self-contained). |
+| `dmra_protocol.pdf` | Built PDF of the paper (v4.1). |
+| `CHANGELOG_v4.md` | Change log for versions 4.0 and 4.1. |
+| `v2/` | Version 2.0 (June 2026) source, PDF, and review change log. |
 
 ## Build
 
 ```bash
-latexmk -pdf dmra_acl_style_rewrite.tex
+latexmk -pdf dmra_protocol.tex
 ```
 
 ## Data availability

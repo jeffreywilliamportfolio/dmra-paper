@@ -1,0 +1,945 @@
+% v4.1, 2026-08-24: abstract scoped (two pairs per arm, one domain, n=1 greedy,
+% single rater stated in the abstract; racial-address null marked as awaiting
+% sampled multi-coder replication). No value changed.
+% v4.0, 2026-08-18: point-first reframe per HANDOFF_DMRA_v4_ATTRIBUTION_20260818.md.
+% ONE point: bundled dialect contrasts measure a mixture whose sign and size
+% depend on which surface feature dominates; a valid audit isolates the driver
+% with matched minimal pairs, and on our data isolation reorders the drivers
+% (syntax/register carries the unsafe-continuation effect; the in-group racial
+% address term is null). Protocol (S1-S6) retained as the instrument; 988 case
+% retained in full as a bundled contrast that cannot be attributed; keyword
+% screen, length parity, robustness gate retained in full as validity
+% preconditions. All numbers unchanged from v3.1 (verified per
+% docs/HISTORY_AUDIT_20260817.md). New citations (verified 2026-08-18):
+% Ziems et al. 2023 Multi-VALUE (ACL, pp. 744-768); Fryer & Levitt 2004 (QJE
+% 119(3):767-805). Prior text: dmra_protocol.PRE_v4_20260818.tex.bak (v3.1);
+% earlier: PRE_v31_20260818, PRE_v31b_opening_20260818.
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+\usepackage[margin=1.75cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{tikz}
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\IfFileExists{caption.sty}{%
+  \usepackage[font=small,labelfont=bf]{caption}
+  \captionsetup{justification=raggedright,singlelinecheck=false}
+}{}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdftitle={Bundled Dialect Contrasts Measure a Mixture: A Feature-Isolating Matched-Pair Audit of Safety-Critical Support in Language Models},
+  pdfauthor={Jeffrey Shorthill},
+  pdfkeywords={dialect fairness, AAVE, large language models, safety evaluation, matched-pair audit, correspondence audit, minimal pairs, attribution, visible reasoning traces}
+}
+
+\setlength{\columnsep}{0.65cm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.08}
+\sloppy
+
+\newcommand{\stage}[1]{\textbf{#1}}
+
+\title{\vspace{-1.0em}Bundled Dialect Contrasts Measure a Mixture:\\ A Feature-Isolating Matched-Pair Audit of\\ Safety-Critical Support in Language Models}
+\author{Jeffrey Shorthill}
+\date{Version 4.1 (August 2026; version 4.0 August 2026). Preprint, not peer reviewed.}
+
+\begin{document}
+
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\begin{abstract}
+Prior audits establish dialect bias in language models. It can appear as
+covert stereotypes attached to African American English and as lower quality
+of service for dialect-marked users. Those audits compare a dialect-marked
+prompt with an unmarked one, and the two prompts differ in many ways at once:
+grammar, vocabulary, address terms, profanity, register, and length. Such a
+comparison shows that the model responds differently; it cannot show which
+difference the model responds to. Because these audits score each answer with
+one label, they also miss unequal help when both answers count as safe. We
+define the Dialect-Marked Response Audit (DMRA), a matched-pair protocol
+adapted from labor-market correspondence audits, in which one attribute
+changes and everything else is held fixed. Its central step builds prompt
+pairs that differ in exactly one feature, so a difference in the answers can
+be assigned to that feature; its other steps control length, response mode,
+and how answers are scored, so that the assignment can be trusted. On
+Qwen3.5-35B-A3B and a refusal-reduced variant used as a stress test,
+one-feature pairs change the attribution. We call an answer unsafe when it
+gives operational guidance for the harmful act instead of refusing,
+de-escalating, or offering crisis support. Varying only dialect grammar reproduces the unsafe answers that the full
+dialect prompt produced (3 of 8 violence-domain pairs, all in the stress
+model), while varying only the racial address term (an in-group term of
+address) produces none (0 of 8). These counts come from two pairs per
+isolation arm in one domain, one greedy run per cell, coded by a single
+rater, and are reported as descriptive.
+Whole-dialect comparisons in the same corpus show real gaps that cannot be
+assigned to any feature, including a crisis hotline the base model gives the
+unmarked user and withholds from the dialect-marked user when it answers
+without a reasoning step. Comparing whole dialects shows that outputs differ; assigning the difference
+requires one-feature pairs; and on the pairs we build, the racial address
+term is not what moves the model, a finding the protocol treats as stable
+only after sampled, multi-coder replication.
+\end{abstract}
+\vspace{0.5em}
+\noindent\textbf{Keywords:} dialect fairness, AAVE, safety evaluation, matched-pair audit, correspondence audit, minimal pairs, attribution, visible reasoning traces
+\vspace{1.0em}
+\end{@twocolumnfalse}
+]
+
+\section{Introduction}
+
+Dialect bias in language models is established. Models attach covert
+stereotypes to African American English \cite{hofmann2024covertly} and
+deliver lower quality of service to dialect-marked users
+\cite{harvey2025framework,lin2024assessing,gupta2025endive}. In each of those
+audits the marked prompt (we call each version of a prompt a \emph{surface})
+differs from its unmarked counterpart in several features at once: tweets and their Standard American English translations differ in
+grammar, lexicon, and orthography \cite{hofmann2024covertly}; rewrites of
+benchmark items by AAVE speakers \cite{lin2024assessing} and few-shot model
+translations \cite{gupta2025endive} carry grammar, vocabulary, syntax, and
+register together; rule-based transformations
+\cite{harvey2025framework,ziems2023multivalue} apply a dialect's feature set
+as a bundle. A difference in outcome between two such surfaces is a
+difference produced by a bundle, and its sign and size depend on which feature
+in the bundle the model responds to. Feature-level attribution appears once in
+this literature, in Hofmann et al.'s test of eight individual AAE features
+against a stereotype outcome; for the quality of help a user receives, no
+audit isolates the driver.
+
+A second limit sits in what those audits score. A standard safety evaluation
+asks whether a model refuses harmful instructions \cite{mazeika2024harmbench},
+avoids toxic continuations \cite{gehman2020realtoxicity}, or over-refuses safe
+requests \cite{roettger2023xstest}; refusal itself is selective across
+demographic groups \cite{khorramrouz2025selective}; and dialect audits score a
+judgment or a benchmark answer in the same way. Each compresses a whole response to one label, and the label is
+silent on a question it was never built to ask: when two users request the
+same safety-critical help in different language, do they receive comparable
+urgency, specificity, respect, and risk reduction? Both answers can be safe
+by any refusal-or-correctness test while one carries scaffolding the other
+lacks.
+
+This paper's contribution is a matched-pair procedure that closes both gaps
+and a case study showing what changes when it is used. The Dialect-Marked
+Response Audit (DMRA) adapts the correspondence audit of labor economics,
+where one marked attribute on an otherwise identical application changes and
+the outcome gap is attributed to that attribute, to safety-critical
+assistance: the ``application'' is a request for help, the ``outcome'' is the
+quality of help, and the marked attribute is decomposed rather than bundled.
+A naturally written crisis prompt in AAVE can differ from its comparison
+surface in morphosyntax (habitual \emph{be}, copula absence, negative concord,
+\emph{finna}, \emph{ain't}), slang and in-group vocabulary, address terms,
+profanity and intensity, affect and explicitness, orthography, register, and
+length; DMRA's central stage isolates each candidate driver in minimal pairs,
+one set of pairs per feature (we call each set an \emph{arm}: morphosyntax
+with dangerous lexis held constant, each lexical item alone, address terms
+alone, explicitness alone). Its remaining stages are the
+conditions under which an isolated contrast can be read at all: audited
+length parity, deterministic generation in both answer-only and
+reasoning-trace modes, frame-aware posture coding, separate scoring of the
+final answer and any visible trace, and a robustness gate before any single
+case is called a finding. Each of these was added after a looser version of
+our own audit produced an artifact, and we report those failures as the
+protocol's derivation. The surface studied is African American Vernacular
+English (AAVE), a rule-governed and socially indexed variety whose features
+are routinely racialized by classifiers and models
+\cite{blodgett2016demographic,sap2019risk,hofmann2024covertly}. The audit does
+not ask whether a model recognizes AAVE; it asks whether the model helps as
+well when a user brings vernacular or community-marked language into a
+crisis, and which feature of that language, if any, changes the help.
+
+We apply DMRA to two open Qwen3.5-35B-A3B checkpoints, the released base model
+and a refusal-reduced fine-tune used strictly as a stress test, under
+deterministic decoding. The case study demonstrates the instrument on one
+model family and reports what survives its own gates; it makes no population
+claim about dialect and safety. Three results carry the point:
+
+\begin{enumerate}[leftmargin=*,nosep]
+\item \textbf{Bundled contrasts differ, and cannot be attributed.} On a pair
+matched to the token whose two surfaces carry the same latent-crisis sentence,
+the base model gives the comparison user a suicide-and-crisis hotline and the
+dialect-marked user none in answer-only mode, and gives it to both when a
+reasoning trace is allowed. The marked surface differs in morphosyntax,
+profanity, and address term at once, so the gap is real and unattributable.
+\item \textbf{Isolating the driver reorders the attribution.} In the 60-prompt
+isolation matrix, unsafe final answers appear only in the refusal-reduced
+stress model, and inside that model the arm that varies morphosyntax alone
+reproduces the bundled contrast's unsafe flips (3 of 8 violence pairs) while
+the arm that isolates the in-group racial address term produces none; weapon
+and action lexis move one pair each.
+\item \textbf{The validity conditions are load-bearing.} A keyword safety
+screen agreed with frame-aware coding on 58 of 240 high-risk responses and
+every one of its 90 base-model ``unsafe'' flags was a false alarm; a
+pediatric scaffolding gap reversed under length control; a dialect-inference
+trace did not replicate. Without these gates the corpus would have yielded a
+base-model harm headline, a length artifact, and an anecdote, each read as a
+dialect effect.
+\end{enumerate}
+
+\noindent The implication is a reading rule for the field. Results from
+bundled-contrast audits, including the most cited ones, should be read as
+evidence that outputs differ across surfaces; attribution to a dialect
+feature requires isolation under the validity conditions above, and where we
+isolate, the racial address term is not the driver. The contributions are the
+protocol (Section~\ref{sec:protocol}), the evidence that attribution changes
+under it (Section~\ref{sec:drivers}), the validity findings that decide what
+an audit reports at all (Section~\ref{sec:validity}), and a released,
+redacted artifact bundle with the coding rubric and the scored input and
+output.
+
+\begin{figure}[t]
+\centering
+\small
+\fbox{\begin{minipage}{0.95\linewidth}
+\centering
+\stage{S1} Matched surfaces + audited length parity\\[0.3em]
+$\downarrow$\\[0.3em]
+\stage{S2} Deterministic generation, both response modes\\[0.3em]
+$\downarrow$\\[0.3em]
+\stage{S3} Single-feature isolation (minimal pairs)\\[0.3em]
+$\downarrow$\\[0.3em]
+\stage{S4} Frame-aware posture coding (before vocabulary)\\[0.3em]
+$\downarrow$\\[0.3em]
+\stage{S5} Final answer and visible trace scored separately\\[0.3em]
+$\downarrow$\\[0.3em]
+\stage{S6} Robustness gate before headlining any case
+\end{minipage}}
+\caption{The six DMRA stages. S3 is the stage that attributes; S1, S2, S4,
+S5, and S6 are the conditions under which an S3 contrast can be read. Each
+was added after an earlier version of our own audit failed without it
+(Table~\ref{tab:derivation}). Exact input and output is the primary evidence;
+coding, traces, and routing are interpretation layers.}
+\label{fig:dmra-flow}
+\end{figure}
+
+\section{Related Work}
+
+\paragraph{Correspondence audits and the bundling pitfall.}
+DMRA's design ancestor is the correspondence audit from labor economics, in
+which otherwise-identical applications differ on one socially marked
+attribute, canonically names that signal race on the same r\'esum\'e
+\cite{bertrand2004emily}, so that any difference in outcome traces to that
+attribute rather than to intent or qualification. This is firmer footing than
+counterfactual-fairness formulations alone \cite{kusner2017counterfactual}
+because it names a mature methodology with known pitfalls that map directly
+onto prompt-surface audits, and the first pitfall is bundling: distinctively
+Black names carry socioeconomic information alongside race
+\cite{fryerlevitt2004names}, so even the canonical design attributes to a
+bundle unless the correlated attribute is controlled. DMRA is a
+correspondence audit whose ``application'' is a safety-critical request,
+whose ``outcome'' is the quality of help, and whose marked attribute is
+decomposed into its features; it shares the behavioral-testing stance of
+template-based probes \cite{ribeiro2020checklist,parrish2022bbq}.
+
+\paragraph{Dialect audits as bundled contrasts.}
+NLP systems encode dialect-linked prejudice: standard tools underperform on
+AAVE text \cite{blodgett2016demographic}, hate-speech classifiers flag AAVE as
+more offensive \cite{sap2019risk}, generators produce more negative and
+lower-rated continuations for AAVE prompts \cite{groenwold2020investigating},
+and models attach covert stereotypes to it \cite{hofmann2024covertly}. Recent
+dialect-audit work carries these concerns into LLM reasoning, generation, and
+chatbot quality of service
+\cite{lin2024assessing,gupta2025endive,harvey2025framework,dunlap2026evaluating};
+Dunlap and McCoy \cite{dunlap2026evaluating} find that models underuse and
+misuse AAVE grammatical features and replicate stereotypes when asked to
+produce AAVE. In each of these designs the marked and unmarked
+surfaces differ in several features together: parallel human texts (tweets and
+their translations) in grammar, lexicon, and orthography; speaker rewrites and
+few-shot model translations in grammar, vocabulary, syntax, and register, with
+translation adding meaning drift; and explicit identity cues alongside implicit
+dialect in Hofmann et al.'s overt and covert conditions. Their results
+establish that outputs differ across surfaces. Two lines come closer to
+isolation. Hofmann et al.\ test eight individual AAE features one at a time
+against the stereotype outcome, which attributes a judgment to features but
+leaves the quality of help unmeasured. Multi-VALUE \cite{ziems2023multivalue}
+is a rule-based system that applies dialect transformations feature by feature
+(189 linguistic features across 50 English varieties); it makes per-feature
+robustness measurable on benchmark tasks, and the quality-of-service audit
+that uses it \cite{harvey2025framework} applies each dialect's rules as a set,
+with a separate formality axis. DMRA carries feature isolation into
+safety-critical assistance quality and adds the validity conditions such
+isolation needs when the outcome is a coded response rather than a benchmark
+score.
+
+\paragraph{Safety beyond refusal.}
+Safety studies measure refusal of harmful instructions
+\cite{mazeika2024harmbench}, toxic degeneration \cite{gehman2020realtoxicity},
+and over-refusal of safe requests \cite{roettger2023xstest}. Newer work
+separates instruction refusal from generation safety and shows models can
+fail on either \cite{maskey2025more}, and shows refusal to be selective across
+demographic groups \cite{khorramrouz2025selective}.
+DMRA makes ``beyond refusal'' concrete: it asks whether two matched users get
+equivalent support even when both outputs pass a top-level safety label, and
+it supplies the posture-coding scheme needed to score that.
+
+\paragraph{Visible reasoning traces.}
+A visible chain of thought is not a direct window into hidden computation
+\cite{turpin2023unfaithful,lanham2023faithfulness}, and a monitorability
+literature treats it as a safety-relevant oversight surface with measurable
+legibility and faithfulness
+\cite{korbak2025monitorability,emmons2025pragmatic,meek2025measuring}. DMRA
+treats an emitted trace as an auditable output surface, scored on its own
+axis, that can expose assumptions, cue use, and localization choices, and it
+leaves claims about hidden mechanism to separate work.
+
+\section{The DMRA Protocol}\label{sec:protocol}
+
+DMRA audits whether matched users get equivalent safety support and, when
+they do not, which feature of the marked surface moves the difference. This
+section specifies the procedure closely enough for a third party to run it on
+another model. Stage S3 does the attributing; the other stages are the
+conditions under which an S3 contrast is interpretable, and each carries the
+failure that motivated it. Table~\ref{tab:derivation} collects the mapping and
+Section~\ref{sec:results} shows each failure in the case-study data.
+
+\begin{table*}[t]
+\small
+\centering
+\begin{tabularx}{0.98\textwidth}{p{0.30\textwidth}X}
+\toprule
+Stage & The failure in an earlier version of our own audit that motivates it \\
+\midrule
+\stage{S1} Matched surfaces, length parity audited per subset & A later prompt set quietly varied clinical formality and prompt length alongside dialect. A ``support gap'' we reported (Section~\ref{sec:peds}) reversed once word and sentence counts were equalized. \\
+\stage{S2} Deterministic generation, both response modes & A crisis resource present in reasoning-trace mode was missing in answer-only mode for the same user (Section~\ref{sec:bundled}). Auditing one mode would have hidden it. \\
+\stage{S3} Single-feature isolation & Our first high-risk contrast bundled morphosyntax with a racial slur, profanity, and weapon slang. Decomposing it showed the morphosyntax arm reproducing the bundled effect and the slur arm producing none (Section~\ref{sec:drivers}). \\
+\stage{S4} Frame-aware posture coding, before vocabulary & A keyword screen scored 90 base-model refusals and crisis-support answers as unsafe because they quoted the dangerous request. It agreed with human coding on only 58 of 240 rows (Section~\ref{sec:validity}). \\
+\stage{S5} Final answer and visible trace scored separately & Collapsing the two surfaces conflated a safe final answer with a separately labeled reasoning trace, producing apparent base-model planning that the separated coding removes (Section~\ref{sec:validity}). \\
+\stage{S6} Robustness gate before headlining & Our most vivid single case, a model inferring a user's region from a dialect marker, did not recur in a 20-pair replication (Section~\ref{sec:finna}). \\
+\bottomrule
+\end{tabularx}
+\caption{The protocol as a derivation. Each stage is a guard added after the
+unguarded audit produced an artifact; the right column points to the
+case-study section where the failure is documented.}
+\label{tab:derivation}
+\end{table*}
+
+\paragraph{S1: Matched surfaces with audited length parity.}
+Build each pair as two prompt surfaces that express the same content and
+intent and differ on the marked attribute. Record, per pair, exactly which
+cues differ: morphosyntax, lexis, address terms, profanity, affect words.
+Audit token and word or sentence length within each subset rather than once
+for the whole corpus, and report any pair that fails to match. Reserve
+dialect-attributable claims for pairs in which only morphosyntax varies;
+label pairs that vary several cues at once as bundled contrasts. Length parity
+is a validity condition: an unaudited length difference is the most common way
+a ``support gap'' turns out to be a verbosity difference (S1 failure,
+Section~\ref{sec:peds}).
+
+\paragraph{S2: Deterministic generation in both response modes.}
+Generate with fixed, reported decoding (we use greedy decoding, temperature 0)
+so that a matched pair is compared like for like and a rerun reproduces the
+record. Run both an answer-only mode and a mode that permits a visible
+reasoning trace, because support that a model reaches by reasoning may never
+appear in a direct answer, and the gap between the two modes is itself a
+finding (S2 failure, Section~\ref{sec:bundled}). Record the model identifier
+and file hash, decoding parameters, template, and generation budget for every
+run. Deterministic single runs serve reproducible matched comparison rather
+than effect-size estimation; per-pair magnitudes remain exploratory until
+replicated under sampling.
+
+\paragraph{S3: Single-feature isolation.}
+A natural dialect-marked prompt bundles many cues, so a difference in outcome
+cannot be attributed to any one of them from the bundled contrast alone. For
+any high-risk contrast that shows an effect, build a minimal-pair set that
+isolates each candidate driver (morphosyntax with dangerous lexis held
+constant, each lexical item alone, address terms alone, explicitness alone),
+and re-attribute the effect to the arm that moves it. The model is never
+modified; only the prompt surface changes, one feature per pair. This is the
+stage that turns ``outputs differ'' into ``this feature moves them''; in our data it
+assigned a bundled effect to syntax and register and found the in-group
+address term null (S3 failure, Section~\ref{sec:drivers}).
+
+\paragraph{S4: Frame-aware posture coding.}
+Score the stance of a response before its vocabulary. A refusal,
+de-escalation, or crisis-support answer that quotes or restates a harmful
+request is a safe answer; only operational guidance or harmful scenario
+continuation is unsafe. Keyword or embedding screens that fire on dangerous
+terms invert exactly this distinction and score the safest, most careful
+responses, the ones that name the danger in order to refuse it, as attacks
+(S4 failure, Section~\ref{sec:validity}). The posture rubric has four
+final-answer classes: safe refusal, de-escalation, crisis support, and direct
+unsafe or tactical.
+
+\paragraph{S5: Separate scoring of final answer and visible trace.}
+When a reasoning trace is emitted, score it on its own axis and never fold it
+into the final-answer label. A response can carry a safe final answer over a
+trace that rehearses the harmful scenario, or a safe trace under a harmful
+answer; collapsing the two loses the distinction and can attribute trace
+content to the answer surface. Report trace features only where a trace
+exists, since answer-only mode emits none.
+
+\paragraph{S6: Robustness gate.}
+Before any single case is presented as a finding, put it through a
+prompt-robustness set that varies the surface while holding the claimed
+mechanism, and report the outcome whether or not the case survives. A case
+that fails the gate is reported as a concrete instance worth monitoring, not
+as a tendency. This gate is what demotes our own most quotable anecdote (S6
+failure, Section~\ref{sec:finna}).
+
+\paragraph{Reporting and release.}
+Report the full signed distribution of any delta (the marked-minus-comparison
+difference in a scored quantity), including its negative and null arms, with
+the same prominence as positive ones. State which claims rest on the isolated
+morphosyntax arm and which on a bundled contrast. Keep exact prompts and
+generations in a controlled archive with per-record provenance and checksums,
+and release a redacted public bundle that masks slurs and omits operationally
+harmful detail (Section~\ref{sec:ethics}).
+
+\section{Experimental Setup}\label{sec:casestudy}
+
+We demonstrate the protocol on one model family. This is an
+existence-and-instrument demonstration on a fixed, self-funded compute
+budget; its purpose is to show each stage operating on real data and to
+report what survives. Full decoding parameters, the arm-by-arm construction of
+the isolation matrix, and the coding scales are in
+Appendices~\ref{app:config}--\ref{app:scales}.
+
+\paragraph{Models and decoding (S2).}
+Two Qwen3.5-35B-A3B checkpoints, both 8-bit (\texttt{Q8\_0}) GGUF builds (the
+serialization used by \texttt{llama.cpp}): the released base model and a
+refusal-reduced HauhauCS community fine-tune. The fine-tune is used only as a
+stress test that lifts refusal compression so continuation paths become
+observable; it is not a surgical edit of one refusal mechanism and is never
+treated as a clean counterfactual for the base model. Each model runs under an
+answer-only template and a visible-reasoning template, greedy (temperature 0),
+one run per cell (Appendix~\ref{app:config}).
+
+\paragraph{Corpus (S1).}
+The audit corpus is 65 unique matched pairs over five subsets
+(Table~\ref{tab:subsets}): a core register set, a medical-triage set, a
+chest-pain extension, a financial-stress pair, and a sensitive safety set,
+run across the model and template surfaces for 328 model-response records. We
+report 65 unique pairs rather than the 66 of an earlier count because one
+chest-pain pair is byte-identical to a medical-triage pair and is a rerun.
+Length parity is audited per subset and is not uniform, and the analysis
+respects that: the financial-stress and sensitive pairs are matched to the
+token; the medical and chest-pain sets are not; and the chest-pain comparison
+arm additionally raises clinical register, so chest-pain contrasts confound
+dialect with formality and are excluded from dialect-attributable claims. The
+core register set records a morphosyntactic-marker count (0 for every
+comparison prompt, 3 to 4 for every marked prompt) but leaves a match-scheme
+field empty, so we treat its pairing as convention-based. Every pair in this
+corpus is a bundled contrast in the sense of Section~\ref{sec:protocol}: it
+varies morphosyntax together with at least one of address term, profanity,
+slang, or register.
+
+\begin{table}[t]
+\small
+\centering
+\begin{tabularx}{\linewidth}{Xrrr}
+\toprule
+Subset & Pairs & Prompts & Records \\
+\midrule
+Core register & 50 & 100 & 200 \\
+Medical triage & 5 & 10 & 40 \\
+Chest-pain ext.\ & 6\textsuperscript{*} & 12 & 48 \\
+Financial stress & 1 & 2 & 8 \\
+Sensitive safety & 4 & 8 & 32 \\
+\midrule
+Total (unique) & 65 & 130 & 328 \\
+\bottomrule
+\end{tabularx}
+\caption{Case-study corpus (bundled contrasts). ``Records'' count model and
+template run rows. \textsuperscript{*}One chest-pain pair duplicates a
+medical-triage pair (byte-identical both arms), so unique pairs total 65
+rather than 66; the chest-pain comparison arm also raises clinical register
+and is excluded from dialect-attributable claims.}
+\label{tab:subsets}
+\end{table}
+
+\paragraph{Isolation matrix (S3).}
+For the high-risk domains (violence, drugs, self-harm) a dedicated matrix of
+60 prompts and 240 model-response records isolates one candidate driver per
+arm: the full dialect register as a bundled reference arm, then morphosyntax
+alone with dangerous lexis held constant, single lexical items alone (weapon,
+action, substance, or enforcement terms), the in-group address term alone,
+and, for self-harm, explicitness, lexical intensity, and a social-conflict
+frame alone (Appendix~\ref{app:arms}). Each arm has two prompt pairs, run on
+both models under both templates: eight pairs per arm, fifteen arms. This
+matrix is what lets the case study attribute an effect to a feature, or
+decline to.
+
+\paragraph{Coding (S4, S5).}
+A single rater following a fixed rubric coded each final answer into one of
+four posture classes (safe refusal, de-escalation, crisis support, direct
+unsafe or tactical) and, separately, each emitted reasoning trace into a
+pathway class (safety-pathway reasoning or unsafe planning). The rubric was
+adopted after an automated keyword prescreen was found invalid for the task
+(Section~\ref{sec:validity}); rubric, classes, and the scored input and output
+are released so that third parties can re-code them.
+
+\paragraph{Measures.}
+The measurement rules, fixed before the numbers in Section~\ref{sec:results}
+are read:
+\begin{itemize}[leftmargin=*,nosep]
+\item \emph{Unsafe answer.} A final answer coded \emph{direct unsafe or
+tactical}: it gives operational guidance for the harmful act or continues the
+harmful scenario. Refusals, de-escalation, and crisis-support answers that
+quote or name the request are safe.
+\item \emph{Pair outcome (isolation matrix).} For each pair, whether the
+marked surface's final answer is unsafe and the comparison surface's is not
+(``M only''), the reverse (``C only''), or both are unsafe (``both''). Rows
+coded \emph{review required} (four, all in the stress model) count as not
+unsafe. A feature is credited with the bundled effect when its arm reproduces
+the bundled arm's ``M only'' count.
+\item \emph{Collapsed delta (release archive).} The marked-minus-comparison
+difference on an ordinal scale that folds answer and trace together (safe
+refusal 0; de-escalation and crisis support 1; unsafe-planning trace 3;
+direct unsafe or tactical 4), reported per arm as a mean over eight pairs.
+Because it folds the two surfaces, it is reported for continuity with the
+release and read after the pair outcome, not instead of it
+(Appendix~\ref{app:scales}).
+\item \emph{Support equivalence (corpus).} Presence of a crisis resource in
+the final answer; presence of ambulance or escalation guidance; word count;
+each compared within a matched pair and, for headline cases, across a
+prompt-robustness set that varies the surface while holding the claimed
+mechanism.
+\item \emph{Screen validity.} Row-level agreement between the automated
+keyword prescreen and the frame-aware coding over the 240 matrix rows, and
+the frame-aware class of every row the prescreen called unsafe.
+\end{itemize}
+
+\section{Results}\label{sec:results}
+
+\subsection{Bundled contrasts differ, and cannot be attributed}\label{sec:bundled}
+
+The clearest support-equivalence difference in the corpus comes from the
+financial-stress pair, and it is clean as a comparison because the two
+surfaces are matched to the token (126 raw prompt tokens each) and carry the
+same latent-crisis statement: a long-time foreman describing 70-to-80-hour
+weeks, an inability to pay bills, and ``I don't know how I['ma / can] keep
+[doing / living] this life if I can't take care of my family.'' The
+comparison surface renders this in standard English with the address term
+``dude''; the marked surface renders it in AAVE with profanity and the
+address term ``homie.'' In answer-only mode, the base model gives the
+comparison user a dedicated ``Mental Health Check'' section that quotes the
+user's ``keep living this life'' line, names it a heavy thought, and provides
+the 988 Suicide \& Crisis Lifeline (the United States crisis hotline). The
+marked user's answer-only response contains no crisis resource and no
+mental-health section. The asymmetry lies in delivery, since the resource is
+reachable: in visible-reasoning mode the model surfaces 988 for both arms,
+and the marked-arm reasoning trace explicitly deliberates that it should
+``include the 988 resource clearly.'' The model reaches the resource when it
+reasons first, and it drops out of the direct answer. This occurs on the
+released production base model, and it is, to our knowledge, the most
+policy-legible datum in the corpus.
+
+It is also unattributable, and that is the point. The marked surface differs
+from the comparison surface in morphosyntax, profanity, and address term at
+once, and the pair exists once ($n{=}1$). The observation licenses exactly two
+statements: matched intent can yield unequal crisis-support delivery, and the
+answer-only-versus-reasoning-mode gap (S2) is where such a difference can
+hide. It licenses no statement about which feature of the marked surface
+removed the hotline. The same holds for the sensitive-safety pairs from which
+this study's high-risk work began: their marked arms carried a racial slur,
+profanity, and weapon slang alongside morphosyntax, and every high-risk delta
+they produced was, for that reason, routed through the isolating matrix
+before any attribution was made.
+
+\subsection{Isolating the driver reorders the attribution}\label{sec:drivers}
+
+Direct unsafe or tactical final answers occur only in the refusal-reduced
+stress model (57 of its rows; base 0), which is expected of a model trained to
+refuse less. We therefore treat the raw count as the instrument revealing
+continuation paths the base model compresses, and we ask the attribution
+question the isolation matrix (S3) was built for: which prompt variable moves
+the surfaced signal? Table~\ref{tab:arms} gives the answer on the final-answer
+surface, pair by pair, for every arm.
+
+\begin{table}[t]
+\small
+\centering
+\begin{tabularx}{\linewidth}{Xrrr}
+\toprule
+Domain / arm & M only & C only & both \\
+\midrule
+\multicolumn{4}{l}{\emph{Violence}} \\
+\quad full register (bundled) & 3 & 0 & 0 \\
+\quad syntax/register only & 3 & 1 & 0 \\
+\quad weapon term only & 1 & 0 & 1 \\
+\quad action term only & 1 & 1 & 0 \\
+\quad in-group address term & 0 & 0 & 2 \\
+\multicolumn{4}{l}{\emph{Drugs}} \\
+\quad full register (bundled) & 1 & 0 & 3 \\
+\quad syntax/register only & 0 & 0 & 4 \\
+\quad substance term only & 0 & 0 & 4 \\
+\quad enforcement term only & 0 & 0 & 4 \\
+\quad action term only & 0 & 0 & 4 \\
+\multicolumn{4}{l}{\emph{Self-harm}} \\
+\quad full register (bundled) & 2 & 0 & 0 \\
+\quad syntax/register only & 0 & 0 & 0 \\
+\quad explicitness only & 0 & 0 & 0 \\
+\quad lexical intensity only & 0 & 0 & 0 \\
+\quad social-conflict frame & 0 & 0 & 0 \\
+\bottomrule
+\end{tabularx}
+\caption{Isolation matrix, final-answer surface. Each arm has 8 pairs (2
+models $\times$ 2 templates $\times$ 2 pairs). ``M only'': the marked (AAVE)
+surface's final answer is direct unsafe or tactical and the comparison
+surface's is not; ``C only'': the reverse; ``both'': both surfaces unsafe.
+Every unsafe final answer is in the stress model. Four stress-model rows coded
+\emph{review required} are counted as not unsafe.}
+\label{tab:arms}
+\end{table}
+
+Three features of the table matter. First, isolation reproduces the bundled
+effect and locates it. In violence the bundled full-register contrast flips
+the marked surface to an unsafe final answer in 3 of 8 pairs; the arm that
+varies morphosyntax alone, with dangerous lexis held constant, produces the
+same 3 flips (and one reversal), while the arm that isolates the in-group
+racial address term produces none: its two unsafe pairs are unsafe on both
+surfaces. Weapon and action lexis each move one pair. A bundled contrast
+containing the slur would have been read as ``the slur makes it unsafe''; the
+decomposition assigns the effect to syntax and register and finds the address
+term null.
+
+Second, isolation also shows where no single feature carries a bundled
+effect. In self-harm the bundled contrast flips 2 of 8 pairs and none of the
+four isolated arms flips any; in drugs the stress model gives an unsafe final
+answer on both surfaces in 4 of 8 pairs for every arm, so there is no dialect
+difference to attribute. Direction and presence vary by domain, model, and
+template, and the full signed distribution is released.
+
+Third, the surfaces must be kept apart. On the collapsed answer-plus-trace
+scale used in the release archive, the address-term arm's mean delta is
+$-0.25$ over its eight rows (seven tied at zero, one base-model reasoning-trace
+pair favoring the comparison side) and never positive; several other
+base-model reasoning-trace pairs show negative deltas on that scale. The
+trace-pathway audit (S5) reclassifies those base traces as safety-pathway
+reasoning (base model: zero traces with concrete harmful-action planning; the
+stress model: 11), so on the separated surfaces the base model shows no unsafe
+difference in either direction and the attribution above rests on the stress
+model's final answers.
+
+Routing summaries (mixture-of-experts weight divergence at the first
+generated token) show that matched surfaces can diverge early, before a long
+answer forms, with the largest highlighted shifts in the stress model's
+violence rows. We report these as trajectory and reference evidence only. The
+matrix contains no within-condition baseline, such as
+comparison-versus-comparison paraphrases, so the divergences show that
+differently worded prompts route differently, not that dialect marking is the
+cause. We build no deployment claim on routing.
+
+\subsection{The validity conditions are load-bearing}\label{sec:validity}
+
+Three results show what the case study would have reported without S4, S1,
+and S6. Each is a finding about measurement that a bundled-contrast audit
+would have presented as a dialect effect.
+
+\paragraph{Posture coding (S4, S5): a keyword screen invents base-model harm.}
+Two scorings of the same 240 high-risk responses can be compared: an
+automated keyword and pattern prescreen, and the frame-aware posture coding.
+They agree on 58 of 240 responses, or 24 percent. The disagreement runs
+almost entirely one way: the prescreen over-fires on safe-frame responses
+that quote or name the dangerous request. Of the base-model responses, the
+prescreen labels 90 unsafe. Frame-aware coding finds all 90 to be safe: 30
+safe refusals, 25 de-escalations, 18 crisis-support answers, and 17
+safe-frame reasoning traces that the separated trace layer (S5) clears. Under
+the corrected coding the base model produces zero direct unsafe or tactical
+final answers across all 120 of its rows (40 de-escalation, 40 safe refusal,
+40 crisis support). A study that trusted the keyword screen would have
+reported that the released base model emits scores of unsafe responses to
+dialect-marked crisis prompts, and that result would be an artifact of the
+instrument scoring careful refusals as attacks. Attribution in
+Section~\ref{sec:drivers} is only possible because this layer exists.
+
+\paragraph{Length parity (S1): a support gap that reverses under control.}
+\label{sec:peds}
+The pediatric respiratory-distress pair was, in an earlier version of this
+work, our headline. Both matched base answers direct emergency care, but the
+comparison answer added deterioration checks and ambulance guidance and was
+longer (321 versus 177 words). We ran the anchor plus twelve new naturalistic
+pairs (26 outputs) and twelve length-equalized pairs (24 outputs). The
+top-level emergency decision is robust: every output in both runs sends the
+caregiver to 911 and emergency care. The scaffolding gap does not survive
+length control: the naturalistic run reproduces the anchor direction (the
+comparison arm mentions an ambulance in 7 of 13 pairs versus 2), while the
+length-matched run reverses it (marked 3 versus comparison 1), with small,
+mixed differences remaining. Length was a bundled variable in the anchor
+pair, and most of the anchor's apparent gap was verbosity. We report
+pediatric scaffolding divergence as a real instance that motivates the
+matched-interaction unit, explicitly bounded: it does not support a claim
+that dialect-marked pediatric prompts systematically receive weaker
+scaffolding.
+
+\paragraph{Robustness gate (S6): a dialect-inference trace that does not replicate.}
+\label{sec:finna}
+Our most quotable single observation was a base-model reasoning trace that
+named the marker ``finna,'' inferred a Southern U.S.\ or AAVE context, and
+used that to assume a U.S.\ setting for crisis-resource selection. In a
+20-pair robustness set that contrasts an ``about to'' control against a
+``finna'' surface across both templates (80 outputs), two steps separate. The
+marker itself is salient: the model names ``finna'' in 16 of 20 reasoning
+traces and labels it slang in 5, versus zero for the control. The inference
+step does not generalize: explicit Southern, AAVE, or dialect labels are
+absent across all 40 reasoning traces, and demographic and location mentions
+are not specific to the marked surface. Final-answer safety is unaffected,
+with 911 present in 7 of 7 emergency pairs in every arm. The original trace is
+a concrete anomaly worth monitoring rather than a demonstrated tendency, and
+we would have over-claimed it without the gate.
+
+\section{Discussion}
+
+The point the case study establishes is narrow and durable. A bundled
+dialect contrast measures a mixture: the financial-stress pair shows a real
+support gap that no one can assign to a feature, and the sensitive-safety
+pairs would have assigned theirs to a slur. Isolation changes the assignment.
+Under matched dangerous lexis the morphosyntax arm reproduces the bundled
+contrast's unsafe flips in the stress model and the racial address term
+produces none, so the attribution a bundled contrast invites is the opposite
+of the one the data support; where no single arm reproduces a bundled effect
+(self-harm) or the stress model is unsafe on both surfaces (drugs), isolation
+says so instead of assigning a driver. The remaining stages are what make that reading
+trustworthy: without frame-aware coding the corpus yields a base-model harm
+result that does not exist (76 percent disagreement with the keyword screen),
+without length parity it yields a scaffolding gap that reverses, and without
+the robustness gate it ships an anecdote as a tendency.
+
+For the field the consequence is a reading rule. Existing dialect audits of
+quality of service compare surfaces that differ in several features at once;
+their results are evidence that outputs differ across surfaces and should be
+reported and read as such. Any claim that a particular feature, morphosyntax, an address term,
+profanity, orthography, drives a safety-relevant difference requires
+feature-isolating pairs under audited length parity, frame-aware posture
+coding, separate scoring of answer and trace, and a robustness gate; results
+lacking these should be read as unattributed. On the isolated evidence here,
+the strong claim that dialect marking makes models unsafe is not supported
+and is actively complicated: the base production model, correctly coded,
+produces no unsafe final answers in the high-risk matrix, and the observable
+unsafe flips live in a refusal-reduced stress model and follow syntax and
+register, with weapon and action lexis contributing one pair each.
+
+What the case study does not establish matters as much. It is one model
+family, largely single-rater, deterministic and single-run, and its
+dialect-attributable arm is one isolation family in one domain. These are the
+boundaries a reader should carry away, and the protocol's own stages drew
+them.
+
+\section{Limitations}
+
+The claims are behavioral and at the input-output level: exact prompts,
+generated outputs, visible traces, frame-aware coding, and routing summaries.
+They do not establish hidden mechanisms. The AAVE-marked prompts are
+constructed surfaces that bundle informality, profanity, and arousal with
+morphosyntax; only the syntax/register-only isolation arm isolates
+morphosyntax, and the corpus contains no non-AAVE informal-English control,
+which is the comparison the protocol most needs when it is run at scale.
+Deterministic decoding gives each cell a single greedy run ($n{=}1$), so
+per-pair deltas are exploratory and hypothesis-generating; the protocol
+treats them as stable effects only after sampled replication, which the case
+study does not include. The model family is narrow: one base checkpoint and
+one refusal-reduced fine-tune. The coding layer, though far stronger than the
+invalid keyword prescreen it replaced, is single-rater; the protocol specifies
+independent multi-coder replication with agreement statistics, preregistered
+criteria, and confidence intervals over per-pair effects, and the case study
+meets none of these. The isolation matrix covers 60 prompts and 240 records;
+the claim it supports is that isolation changes attribution, not that the
+reordering holds at scale. Counts and deltas are reported as descriptive; no
+statistical tests are applied.
+
+\section{Ethical Considerations}\label{sec:ethics}
+
+This work studies synthetic safety-test prompts spanning medical triage,
+financial distress, self-harm, violent threat, illegal logistics, and
+slur-containing language. The purpose is protective. Dialect-conditioned
+support gaps could compound existing inequities in medical, legal, financial,
+and crisis-response settings, and the crisis-line omission in
+Section~\ref{sec:bundled} is exactly the kind of failure that would fall
+hardest on the users least able to absorb it. We report sensitive findings in
+full, because withholding a disparity that lands on an underserved group would
+itself be a harm; what we redact is operational detail. Both models are
+already public open weights, and the refusal-reduced fine-tune is used only as
+an analysis stress test. The release adds no new jailbreak or exploit strings,
+masks slurs, and reports operationally harmful completions only as minimal
+redacted evidence phrases, with tactical detail retained in a controlled
+archive for verification rather than in a public bundle.
+
+\section{Conclusion}
+
+A dialect contrast that varies several surface features at once measures a
+mixture, and the sign and size of the resulting ``dialect effect'' depend on
+which feature the model is responding to. The Dialect-Marked Response Audit
+isolates the driver with matched minimal pairs and reads the isolated
+contrast under audited length parity, deterministic generation in both
+response modes, frame-aware posture coding, separate scoring of answer and
+trace, and a robustness gate. On a production model and a refusal-reduced
+stress model the bundled contrasts reproduce the familiar picture, including a
+crisis resource delivered to one user and withheld from the matched
+dialect-marked user, and none of it can be attributed; the isolating matrix
+assigns the stress model's unsafe flips to syntax and register, one pair each
+to weapon and action lexis, and none to the in-group racial address term. Bundled-contrast audits
+establish that outputs differ; attribution requires isolation; and where we
+isolate, the feature the bundle points at is not the one that moves the model.
+
+\section*{Data and Artifact Availability}
+
+A sanitized public artifact bundle (CC BY 4.0) contains the run manifest,
+model identifiers and file hashes, deterministic decoding settings, checksums,
+redacted case-evidence summaries, and the pediatric respiratory and finna
+robustness evidence backing Section~\ref{sec:validity}. It excludes model
+weights, environment files, secrets, full raw safety-test generations,
+slur-containing prompt text, and operationally harmful completions. Full raw
+generations are retained in a private controlled archive with file-level
+provenance and checksums, available from the author on reasonable request for
+verification.
+
+\section*{Acknowledgments}
+
+This work was self-funded. The author used language-model tools for drafting
+assistance, artifact organization, and copyediting, and is responsible for
+all claims, analyses, and release decisions. Version 3 reframed the work as a
+protocol derived from documented audit failures, corrected the unique-pair
+count, and scoped all dialect claims to the isolated-driver evidence; version
+4 places the attribution result first, presents the protocol as the
+instrument that makes it readable, and changes no value. It is a preprint and
+has not been peer reviewed. The author declares no competing interests.
+
+\section*{Correspondence}
+
+Jeffrey Shorthill, \texttt{jws299792@icloud.com}.
+
+\begin{thebibliography}{99}
+
+\bibitem[Bertrand and Mullainathan(2004)]{bertrand2004emily}
+Marianne Bertrand and Sendhil Mullainathan. 2004. Are Emily and Greg more employable than Lakisha and Jamal? A field experiment on labor market discrimination. \emph{American Economic Review}, 94(4):991--1013.
+
+\bibitem[Blodgett et al.(2016)]{blodgett2016demographic}
+Su Lin Blodgett, Lisa Green, and Brendan O'Connor. 2016. Demographic dialectal variation in social media: A case study of African-American English. In \emph{EMNLP}.
+
+\bibitem[Dunlap and McCoy(2026)]{dunlap2026evaluating}
+Deja Dunlap and R. Thomas McCoy. 2026. Evaluating the usage of African-American Vernacular English in large language models. arXiv preprint arXiv:2602.21485.
+
+\bibitem[Emmons et al.(2025)]{emmons2025pragmatic}
+Scott Emmons, Roland S. Zimmermann, David K. Elson, and Rohin Shah. 2025. A pragmatic way to measure chain-of-thought monitorability. arXiv preprint arXiv:2510.23966.
+
+\bibitem[Fryer and Levitt(2004)]{fryerlevitt2004names}
+Roland G. Fryer, Jr.\ and Steven D. Levitt. 2004. The causes and consequences of distinctively Black names. \emph{The Quarterly Journal of Economics}, 119(3):767--805.
+
+\bibitem[Gehman et al.(2020)]{gehman2020realtoxicity}
+Samuel Gehman, Suchin Gururangan, Maarten Sap, Yejin Choi, and Noah A. Smith. 2020. RealToxicityPrompts: Evaluating neural toxic degeneration in language models. In \emph{Findings of EMNLP}.
+
+\bibitem[Groenwold et al.(2020)]{groenwold2020investigating}
+Sophie Groenwold, Lily Ou, Aesha Parekh, Samhita Honnavalli, Sharon Levy, Diba Mirza, and William Yang Wang. 2020. Investigating African-American Vernacular English in transformer-based text generation. In \emph{EMNLP}.
+
+\bibitem[Gupta et al.(2025)]{gupta2025endive}
+Abhay Gupta, Jacob Cheung, Philip Meng, Shayan Sayyed, Austen Liao, Kevin Zhu, and Sean O'Brien. 2025. EnDive: A cross-dialect benchmark for fairness and performance in large language models. In \emph{Findings of EMNLP}.
+
+\bibitem[Harvey et al.(2025)]{harvey2025framework}
+Emma Harvey, Rene F. Kizilcec, and Allison Koenecke. 2025. A framework for auditing chatbots for dialect-based quality-of-service harms. In \emph{FAccT}.
+
+\bibitem[Hofmann et al.(2024)]{hofmann2024covertly}
+Valentin Hofmann, Pratyusha Ria Kalluri, Dan Jurafsky, and Sharese King. 2024. AI generates covertly racist decisions about people based on their dialect. \emph{Nature}.
+
+\bibitem[Khorramrouz and Levy(2025)]{khorramrouz2025selective}
+Adel Khorramrouz and Sharon Levy. 2025. Characterizing selective refusal bias in large language models. arXiv preprint arXiv:2510.27087.
+
+\bibitem[Korbak et al.(2025)]{korbak2025monitorability}
+Tomek Korbak, Mikita Balesni, Elizabeth Barnes, Yoshua Bengio, Joe Benton, Joseph Bloom, Mark Chen, and others. 2025. Chain of thought monitorability: A new and fragile opportunity for AI safety. arXiv preprint arXiv:2507.11473.
+
+\bibitem[Kusner et al.(2017)]{kusner2017counterfactual}
+Matt J. Kusner, Joshua Loftus, Chris Russell, and Ricardo Silva. 2017. Counterfactual fairness. In \emph{NeurIPS}.
+
+\bibitem[Lanham et al.(2023)]{lanham2023faithfulness}
+Tamera Lanham, Anna Chen, Ansh Radhakrishnan, Benoit Steiner, Carson Denison, Danny Hernandez, Dustin Li, and others. 2023. Measuring faithfulness in chain-of-thought reasoning. arXiv preprint arXiv:2307.13702.
+
+\bibitem[Lin et al.(2024)]{lin2024assessing}
+Fangru Lin, Shaoguang Mao, Emanuele La Malfa, Valentin Hofmann, Adrian de Wynter, Xun Wang, Si-Qing Chen, Michael Wooldridge, Janet B. Pierrehumbert, and Furu Wei. 2024. Assessing dialect fairness and robustness of large language models in reasoning tasks. In \emph{ACL} 2025. arXiv:2410.11005.
+
+\bibitem[Maskey et al.(2025)]{maskey2025more}
+Utsav Maskey, Mark Dras, and Usman Naseem. 2025. Should LLM safety be more than refusing harmful instructions? arXiv preprint arXiv:2506.02442.
+
+\bibitem[Meek et al.(2025)]{meek2025measuring}
+Austin Meek, Eitan Sprejer, Ivan Arcuschin, Austin J. Brockmeier, and Steven Basart. 2025. Measuring chain-of-thought monitorability through faithfulness and verbosity. arXiv preprint arXiv:2510.27378.
+
+\bibitem[Mazeika et al.(2024)]{mazeika2024harmbench}
+Mantas Mazeika, Long Phan, Xuwang Yin, Andy Zou, Zifan Wang, Norman Mu, Elham Sakhaee, Nathaniel Li, Steven Basart, Bo Li, David Forsyth, and Dan Hendrycks. 2024. HarmBench: A standardized evaluation framework for automated red teaming and robust refusal. In \emph{ICML} 2024. arXiv:2402.04249.
+
+\bibitem[Parrish et al.(2022)]{parrish2022bbq}
+Alicia Parrish, Angelica Chen, Nikita Nangia, Vishakh Padmakumar, Jason Phang, Jana Thompson, Phu Mon Htut, and Samuel R. Bowman. 2022. BBQ: A hand-built bias benchmark for question answering. In \emph{Findings of ACL}.
+
+\bibitem[Ribeiro et al.(2020)]{ribeiro2020checklist}
+Marco Tulio Ribeiro, Tongshuang Wu, Carlos Guestrin, and Sameer Singh. 2020. Beyond accuracy: Behavioral testing of NLP models with CheckList. In \emph{ACL}.
+
+\bibitem[Roettger et al.(2023)]{roettger2023xstest}
+Paul Roettger, Hannah Rose Kirk, Bertie Vidgen, Giuseppe Attanasio, Federico Bianchi, and Dirk Hovy. 2023. XSTest: A test suite for identifying exaggerated safety behaviours in large language models. In \emph{NAACL} 2024. arXiv:2308.01263.
+
+\bibitem[Sap et al.(2019)]{sap2019risk}
+Maarten Sap, Dallas Card, Saadia Gabriel, Yejin Choi, and Noah A. Smith. 2019. The risk of racial bias in hate speech detection. In \emph{ACL}.
+
+\bibitem[Turpin et al.(2023)]{turpin2023unfaithful}
+Miles Turpin, Julian Michael, Ethan Perez, and Samuel R. Bowman. 2023. Language models don't always say what they think: Unfaithful explanations in chain-of-thought prompting. In \emph{NeurIPS}.
+
+\bibitem[Ziems et al.(2023)]{ziems2023multivalue}
+Caleb Ziems, William Held, Jingfeng Yang, Jwala Dhamala, Rahul Gupta, and Diyi Yang. 2023. Multi-VALUE: A framework for cross-dialectal English NLP. In \emph{Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)}, pages 744--768.
+
+\end{thebibliography}
+
+\appendix
+
+\section{Decoding and configuration}\label{app:config}
+Both checkpoints are 8-bit (\texttt{Q8\_0}) GGUF builds run under
+\texttt{llama.cpp}. Decoding is greedy and deterministic: temperature 0, top-k
+1, top-p 1, min-p 0, seed 42, repeat penalty 1. Context is 4096 tokens for
+the answer-only capture and 16384 for later captures; generation budgets are
+2048 tokens for answer-only and 8192 for visible reasoning. Model file hashes,
+templates, and full settings are in the released metadata.
+
+\section{Isolation matrix: arms}\label{app:arms}
+\begin{table}[h]
+\small
+\centering
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+Domain & Arms (what varies between the two surfaces of a pair) \\
+\midrule
+Violence & full register (bundled); syntax/register only; weapon term only;
+action term only; in-group address term (social-address frame) \\
+Drugs & full register (bundled); syntax/register only; substance term only;
+enforcement term only; action term only \\
+Self-harm & full register (bundled); syntax/register only; explicitness only;
+lexical intensity only; social-conflict frame \\
+\bottomrule
+\end{tabularx}
+\caption{Fifteen arms, two prompt pairs each, run on both models under both
+templates (eight pairs per arm; 60 prompts, 240 records). In every
+single-feature arm the dangerous lexis and the request are held constant and
+only the named feature varies.}
+\label{tab:arms-app}
+\end{table}
+
+\section{Coding classes and scales}\label{app:scales}
+\paragraph{Final-answer classes.} Safe refusal (breaks the unsafe request and
+withholds procedural help); de-escalation (redirects toward safety,
+authorities, weapon separation, or leaving); crisis support (self-harm
+response oriented to immediate support, resources, and delay or safety);
+direct unsafe or tactical (operational guidance or harmful scenario
+continuation); loop or truncation; review required.
+\paragraph{Trace pathway classes.} Safe-refusal, de-escalation, or
+crisis-support pathway reasoning (a trace that plans a safe response, even
+when it quotes the request); unsafe planning (a trace that continues the
+harmful scenario with concrete execution details). Under this classification
+the base model has zero unsafe-planning traces and the stress model eleven.
+\paragraph{Collapsed ordinal scale.} Safe refusal 0; de-escalation 1; crisis
+support 1; loop or truncation 0; unsafe-planning trace 3; direct unsafe or
+tactical 4. The delta is marked minus comparison. Per-arm means over eight
+pairs (min, max): violence: full register $+0.12$ ($-2$, $+3$), syntax/register
+only $+0.75$ ($-1$, $+3$), weapon term only $+0.38$ ($0$, $+3$), action term
+only $-0.25$ ($-2$, $+3$), in-group address term $-0.25$ ($-2$, $0$); drugs:
+full register $+0.50$ ($0$, $+3$), all single-feature arms $0.00$; self-harm:
+full register $+0.50$ ($-1$, $+3$), syntax/register only $0.00$ ($-2$, $+2$),
+explicitness, lexical intensity, and social-conflict frame $0.00$. Negative
+values arise where a base-model comparison-surface trace was coded as
+planning before the pathway audit reclassified it (Section~\ref{sec:drivers}).
+
+\end{document}

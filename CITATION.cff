@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as below."
-title: "Dialect-Marked Response Audit: A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"
+title: "Bundled Dialect Contrasts Measure a Mixture: A Feature-Isolating Matched-Pair Audit of Safety-Critical Support in Language Models"
 abstract: >-
   Safety evaluation for large language models typically scores a single answer,
   whether it refuses a harmful request and whether it is correct, yet two users
@@ -22,8 +22,8 @@ authors:
     affiliation: "Independent researcher"
     email: jws299792@icloud.com
     orcid: "https://orcid.org/0009-0004-3954-2752"
-version: "2.0"
-date-released: "2026-06-21"
+version: "4.1"
+date-released: "2026-08-24"
 license: CC-BY-4.0
 identifiers:
   - type: doi
@@ -43,7 +43,7 @@ keywords:
   - visible reasoning traces
 preferred-citation:
   type: article
-  title: "Dialect-Marked Response Audit: A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"
+  title: "Bundled Dialect Contrasts Measure a Mixture: A Feature-Isolating Matched-Pair Audit of Safety-Critical Support in Language Models"
   authors:
     - family-names: Shorthill
       given-names: "Jeffrey W."
