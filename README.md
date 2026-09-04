@@ -1,11 +1,11 @@
 # Bundled Dialect Contrasts Measure a Mixture: A Feature-Isolating Matched-Pair Audit of Safety-Critical Support in Language Models
 
-The Dialect-Marked Response Audit (DMRA) protocol paper, version 4.1 (August 2026): paper source, built PDF, and change log. (Version 2.0, June 2026, was titled "Dialect-Marked Response Audit (DMRA): A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"; it is kept under `v2/`.)
+The Dialect-Marked Response Audit (DMRA) protocol paper, version 4.3 (September 2026): paper source, built PDF, and change log. (Version 2.0, June 2026, was titled "Dialect-Marked Response Audit (DMRA): A Matched-Pair Safety-Support Evaluation of AAVE-Marked Prompt Surfaces"; it is kept under `v2/`.)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20449546.svg)](https://doi.org/10.5281/zenodo.20449546)
 
 **Author:** Jeffrey W. Shorthill (independent researcher) · `jws299792@icloud.com`
-**Version:** 4.1 (August 2026; v4.0 August 2026; v2.0 June 2026) · preprint, not peer reviewed
+**Version:** 4.3 (September 2026; v4.2, v4.1, v4.0 August 2026; v2.0 June 2026) · preprint, not peer reviewed
 **DOI:** [10.5281/zenodo.20449546](https://doi.org/10.5281/zenodo.20449546) (concept DOI — resolves to the latest version)
 **License:** [CC BY 4.0](LICENSE)
 
@@ -29,7 +29,7 @@ hotline withheld from the marked user in answer-only mode.
 | Path | Contents |
 |---|---|
 | `dmra_protocol.tex` | Paper source (LaTeX, two-column; self-contained). |
-| `dmra_protocol.pdf` | Built PDF of the paper (v4.1). |
+| `dmra_protocol.pdf` | Built PDF of the paper (v4.3). |
 | `CHANGELOG_v4.md` | Change log for versions 4.0 and 4.1. |
 | `v2/` | Version 2.0 (June 2026) source, PDF, and review change log. |
 

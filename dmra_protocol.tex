@@ -1,3 +1,6 @@
+% v4.3, 2026-09-03: terminology. AAVE used throughout; the abstract, introduction,
+% and related-work sentences that reported Hofmann et al.'s findings as "African
+% American English" / "AAE" now use AAVE, expanded at first use. No value changed.
 % v4.1, 2026-08-24: abstract scoped (two pairs per arm, one domain, n=1 greedy,
 % single rater stated in the abstract; racial-address null marked as awaiting
 % sampled multi-coder replication). No value changed.
@@ -53,7 +56,7 @@
 
 \title{\vspace{-1.0em}Bundled Dialect Contrasts Measure a Mixture:\\ A Feature-Isolating Matched-Pair Audit of\\ Safety-Critical Support in Language Models}
 \author{Jeffrey Shorthill}
-\date{Version 4.1 (August 2026; version 4.0 August 2026). Preprint, not peer reviewed.}
+\date{Version 4.3 (September 2026; versions 4.0 to 4.2 August 2026). Preprint, not peer reviewed.}
 
 \begin{document}
 
@@ -62,8 +65,8 @@
 \maketitle
 \begin{abstract}
 Prior audits establish dialect bias in language models. It can appear as
-covert stereotypes attached to African American English and as lower quality
-of service for dialect-marked users. Those audits compare a dialect-marked
+covert stereotypes attached to African American Vernacular English (AAVE) and
+as lower quality of service for dialect-marked users. Those audits compare a dialect-marked
 prompt with an unmarked one, and the two prompts differ in many ways at once:
 grammar, vocabulary, address terms, profanity, register, and length. Such a
 comparison shows that the model responds differently; it cannot show which
@@ -78,12 +81,9 @@ and how answers are scored, so that the assignment can be trusted. On
 Qwen3.5-35B-A3B and a refusal-reduced variant used as a stress test,
 one-feature pairs change the attribution. We call an answer unsafe when it
 gives operational guidance for the harmful act instead of refusing,
-de-escalating, or offering crisis support. Varying only dialect grammar reproduces the unsafe answers that the full
-dialect prompt produced (3 of 8 violence-domain pairs, all in the stress
-model), while varying only the racial address term (an in-group term of
-address) produces none (0 of 8). These counts come from two pairs per
+de-escalating, or offering crisis support. Varying syntax and register together, with dangerous lexis held constant, reproduces the unsafe answers that the full dialect prompt produced (3 of 8 violence-domain pairs, all in the stress model), while varying only the in-group racial address term produces none (0 of 8). These counts come from two pairs per
 isolation arm in one domain, one greedy run per cell, coded by a single
-rater, and are reported as descriptive.
+rater, and are reported as descriptive. Four of the five violence arms meet the one-feature rule; the syntax/register arm varies grammar and register as one block, because a natural dialect-marked sentence does not separate them, and its effect is attributed to the block.
 Whole-dialect comparisons in the same corpus show real gaps that cannot be
 assigned to any feature, including a crisis hotline the base model gives the
 unmarked user and withholds from the dialect-marked user when it answers
@@ -101,7 +101,7 @@ only after sampled, multi-coder replication.
 \section{Introduction}
 
 Dialect bias in language models is established. Models attach covert
-stereotypes to African American English \cite{hofmann2024covertly} and
+stereotypes to African American Vernacular English (AAVE) \cite{hofmann2024covertly} and
 deliver lower quality of service to dialect-marked users
 \cite{harvey2025framework,lin2024assessing,gupta2025endive}. In each of those
 audits the marked prompt (we call each version of a prompt a \emph{surface})
@@ -114,7 +114,7 @@ register together; rule-based transformations
 as a bundle. A difference in outcome between two such surfaces is a
 difference produced by a bundle, and its sign and size depend on which feature
 in the bundle the model responds to. Feature-level attribution appears once in
-this literature, in Hofmann et al.'s test of eight individual AAE features
+this literature, in Hofmann et al.'s test of eight individual AAVE features
 against a stereotype outcome; for the quality of help a user receives, no
 audit isolates the driver.
 
@@ -142,17 +142,14 @@ surface in morphosyntax (habitual \emph{be}, copula absence, negative concord,
 \emph{finna}, \emph{ain't}), slang and in-group vocabulary, address terms,
 profanity and intensity, affect and explicitness, orthography, register, and
 length; DMRA's central stage isolates each candidate driver in minimal pairs,
-one set of pairs per feature (we call each set an \emph{arm}: morphosyntax
-with dangerous lexis held constant, each lexical item alone, address terms
-alone, explicitness alone). Its remaining stages are the
+one set of pairs per feature (we call each set an \emph{arm}: syntax and register as one block with dangerous lexis held constant, each lexical item alone, address terms alone, explicitness alone). Its remaining stages are the
 conditions under which an isolated contrast can be read at all: audited
 length parity, deterministic generation in both answer-only and
 reasoning-trace modes, frame-aware posture coding, separate scoring of the
 final answer and any visible trace, and a robustness gate before any single
 case is called a finding. Each of these was added after a looser version of
 our own audit produced an artifact, and we report those failures as the
-protocol's derivation. The surface studied is African American Vernacular
-English (AAVE), a rule-governed and socially indexed variety whose features
+protocol's derivation. The surface studied is AAVE, a rule-governed and socially indexed variety whose features
 are routinely racialized by classifiers and models
 \cite{blodgett2016demographic,sap2019risk,hofmann2024covertly}. The audit does
 not ask whether a model recognizes AAVE; it asks whether the model helps as
@@ -174,8 +171,7 @@ reasoning trace is allowed. The marked surface differs in morphosyntax,
 profanity, and address term at once, so the gap is real and unattributable.
 \item \textbf{Isolating the driver reorders the attribution.} In the 60-prompt
 isolation matrix, unsafe final answers appear only in the refusal-reduced
-stress model, and inside that model the arm that varies morphosyntax alone
-reproduces the bundled contrast's unsafe flips (3 of 8 violence pairs) while
+stress model, and inside that model the arm that varies syntax and register together reproduces the bundled contrast's unsafe flips (3 of 8 violence pairs) while
 the arm that isolates the in-group racial address term produces none; weapon
 and action lexis move one pair each.
 \item \textbf{The validity conditions are load-bearing.} A keyword safety
@@ -260,7 +256,7 @@ few-shot model translations in grammar, vocabulary, syntax, and register, with
 translation adding meaning drift; and explicit identity cues alongside implicit
 dialect in Hofmann et al.'s overt and covert conditions. Their results
 establish that outputs differ across surfaces. Two lines come closer to
-isolation. Hofmann et al.\ test eight individual AAE features one at a time
+isolation. Hofmann et al.\ test eight individual AAVE features one at a time
 against the stereotype outcome, which attributes a judgment to features but
 leaves the quality of help unmeasured. Multi-VALUE \cite{ziems2023multivalue}
 is a rule-based system that applies dialect transformations feature by feature
@@ -352,10 +348,7 @@ replicated under sampling.
 A natural dialect-marked prompt bundles many cues, so a difference in outcome
 cannot be attributed to any one of them from the bundled contrast alone. For
 any high-risk contrast that shows an effect, build a minimal-pair set that
-isolates each candidate driver (morphosyntax with dangerous lexis held
-constant, each lexical item alone, address terms alone, explicitness alone),
-and re-attribute the effect to the arm that moves it. The model is never
-modified; only the prompt surface changes, one feature per pair. This is the
+isolates each candidate driver (syntax and register as one block with dangerous lexis held constant, each lexical item alone, address terms alone, explicitness alone), and re-attribute the effect to the arm that moves it. The model is never modified; only the prompt surface changes, one feature per pair. The syntax/register arm is the one exception the rule allows: a natural dialect-marked sentence carries its grammar and its register together, and splitting them yields unnatural text, so that arm varies the block and any effect it reproduces is attributed to the block, not to grammar alone. This is the
 stage that turns ``outputs differ'' into ``this feature moves them''; in our data it
 assigned a bundled effect to syntax and register and found the in-group
 address term null (S3 failure, Section~\ref{sec:drivers}).
@@ -461,8 +454,7 @@ and is excluded from dialect-attributable claims.}
 \paragraph{Isolation matrix (S3).}
 For the high-risk domains (violence, drugs, self-harm) a dedicated matrix of
 60 prompts and 240 model-response records isolates one candidate driver per
-arm: the full dialect register as a bundled reference arm, then morphosyntax
-alone with dangerous lexis held constant, single lexical items alone (weapon,
+arm: the full dialect register as a bundled reference arm, then syntax and register as one block with dangerous lexis held constant, single lexical items alone (weapon,
 action, substance, or enforcement terms), the in-group address term alone,
 and, for self-harm, explicitness, lexical intensity, and a social-conflict
 frame alone (Appendix~\ref{app:arms}). Each arm has two prompt pairs, run on
@@ -595,9 +587,7 @@ Every unsafe final answer is in the stress model. Four stress-model rows coded
 
 Three features of the table matter. First, isolation reproduces the bundled
 effect and locates it. In violence the bundled full-register contrast flips
-the marked surface to an unsafe final answer in 3 of 8 pairs; the arm that
-varies morphosyntax alone, with dangerous lexis held constant, produces the
-same 3 flips (and one reversal), while the arm that isolates the in-group
+the marked surface to an unsafe final answer in 3 of 8 pairs; the arm that varies syntax and register together, with dangerous lexis held constant, produces the same 3 flips (and one reversal), while the arm that isolates the in-group
 racial address term produces none: its two unsafe pairs are unsafe on both
 surfaces. Weapon and action lexis each move one pair. A bundled contrast
 containing the slur would have been read as ``the slur makes it unsafe''; the
@@ -732,8 +722,7 @@ The claims are behavioral and at the input-output level: exact prompts,
 generated outputs, visible traces, frame-aware coding, and routing summaries.
 They do not establish hidden mechanisms. The AAVE-marked prompts are
 constructed surfaces that bundle informality, profanity, and arousal with
-morphosyntax; only the syntax/register-only isolation arm isolates
-morphosyntax, and the corpus contains no non-AAVE informal-English control,
+morphosyntax; the syntax/register arm varies that block as a unit and no arm isolates morphosyntax alone, and the corpus contains no non-AAVE informal-English control,
 which is the comparison the protocol most needs when it is run at scale.
 Deterministic decoding gives each cell a single greedy run ($n{=}1$), so
 per-pair deltas are exploratory and hypothesis-generating; the protocol
@@ -912,9 +901,7 @@ lexical intensity only; social-conflict frame \\
 \bottomrule
 \end{tabularx}
 \caption{Fifteen arms, two prompt pairs each, run on both models under both
-templates (eight pairs per arm; 60 prompts, 240 records). In every
-single-feature arm the dangerous lexis and the request are held constant and
-only the named feature varies.}
+templates (eight pairs per arm; 60 prompts, 240 records). In every single-feature arm the dangerous lexis and the request are held constant and only the named feature varies; the syntax/register arm varies grammar and register as one block (Section~\ref{sec:protocol}, S3).}
 \label{tab:arms-app}
 \end{table}
 

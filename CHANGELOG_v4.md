@@ -1,5 +1,23 @@
 # Change log — Dialect-Marked Response Audit (DMRA)
 
+## Version 4.3 (2026-09-03)
+- Terminology: AAVE is used throughout. The abstract, introduction, and related-work sentences that
+  reported Hofmann et al.'s findings in that paper's term ("African American English", "AAE") now
+  say AAVE, expanded at first use in the abstract and in the body. Keywords already read AAVE.
+- No value changed.
+- Zenodo: new version under concept 10.5281/zenodo.20449546.
+
+## Version 4.2 (2026-08-27)
+- Terminology matched to the data: the isolation arm that reproduces the bundled violence effect is
+  named "syntax/register" everywhere (abstract, contributions, S3, isolation-matrix description,
+  results, appendix caption). The abstract no longer says "only dialect grammar."
+- S3 and the appendix state that the syntax/register arm varies grammar and register as one block,
+  because a natural dialect-marked sentence does not separate them, and that its effect is attributed
+  to the block, not to grammar alone. Limitations: no arm isolates morphosyntax alone.
+- Abstract states that four of the five violence arms meet the one-feature rule and names the exception.
+- No value changed.
+- Zenodo: new version under concept 10.5281/zenodo.20449546 pending.
+
 ## Version 4.1 (2026-08-24)
 - Abstract states its evidence base after the isolation counts: two pairs per isolation arm, one
   domain, one greedy run per cell, single rater, descriptive counts. The closing sentence marks the
