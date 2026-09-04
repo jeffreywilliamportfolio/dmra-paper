@@ -22,8 +22,8 @@ authors:
     affiliation: "Independent researcher"
     email: jws299792@icloud.com
     orcid: "https://orcid.org/0009-0004-3954-2752"
-version: "4.1"
-date-released: "2026-08-24"
+version: "4.3"
+date-released: "2026-09-03"
 license: CC-BY-4.0
 identifiers:
   - type: doi
@@ -35,6 +35,12 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.22088897"
     description: "Version 4.1"
+  - type: doi
+    value: "10.5281/zenodo.22134161"
+    description: "Version 4.2"
+  - type: doi
+    value: "10.5281/zenodo.22291463"
+    description: "Version 4.3"
 url: "https://github.com/jeffreywilliamportfolio/dmra-paper"
 repository-code: "https://github.com/jeffreywilliamportfolio/dmra-paper"
 keywords:
